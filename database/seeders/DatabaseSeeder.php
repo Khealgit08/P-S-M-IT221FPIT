@@ -13,6 +13,7 @@ use Database\Seeders\SupplierAuditSeeder;
 use Database\Seeders\SupplierClassificationSeeder;
 use Database\Seeders\SupplierCommunicationSeeder;
 use Database\Seeders\ContractSeeder;
+use Database\Seeders\UserSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -33,6 +34,7 @@ class DatabaseSeeder extends Seeder
             SupplierClassificationSeeder::class,
             SupplierCommunicationSeeder::class,
             ContractSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }

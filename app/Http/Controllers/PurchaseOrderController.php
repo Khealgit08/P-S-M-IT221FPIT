@@ -37,7 +37,7 @@ class PurchaseOrderController extends Controller
 
     public function show($id)
     {
-        $order = PurchaseOrder::with('supplier')->findOrFail($id);
+        $order = PurchaseOrder::with(['supplier', 'approver'])->findOrFail($id);
         return response()->json($order);
     }
 
@@ -85,7 +85,7 @@ class PurchaseOrderController extends Controller
         }
         $order->approval_status = 'approved';
         $order->approved_by = $request->input('approved_by');
-        $order->approved_at = now();
+        $order->approved_at = \Carbon\Carbon::now();
         $order->rejected_reason = null;
         $order->save();
         return response()->json(['message' => 'Purchase order approved.']);
@@ -103,7 +103,7 @@ class PurchaseOrderController extends Controller
         }
         $order->approval_status = 'rejected';
         $order->approved_by = $request->input('approved_by');
-        $order->approved_at = now();
+        $order->approved_at = \Carbon\Carbon::now();
         $order->rejected_reason = $request->input('rejected_reason');
         $order->save();
         return response()->json(['message' => 'Purchase order rejected.']);
@@ -116,9 +116,10 @@ class PurchaseOrderController extends Controller
     public function match($id)
     {
         $order = PurchaseOrder::with(['goodsReceiptNotes', 'invoices'])->findOrFail($id);
-        $poItems = collect(json_decode($order->items, true));
+        $poItems = is_array($order->items) ? collect($order->items) : collect(json_decode($order->items, true));
         $grnItems = $order->goodsReceiptNotes->flatMap(function($grn) {
-            return collect(json_decode($grn->items, true));
+            $items = is_array($grn->items) ? $grn->items : json_decode($grn->items, true);
+            return collect($items);
         });
         $invoiceItems = $order->invoices->flatMap(function($inv) use ($order) {
             // For simplicity, assume invoice amount is for all items

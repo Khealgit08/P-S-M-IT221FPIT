@@ -18,13 +18,13 @@ $router->get('/', function () use ($router) {
 $router->group(['prefix' => 'api/suppliers'], function () use ($router) {
     $router->get('/', 'SupplierController@index');           // Get all suppliers
     $router->post('/', 'SupplierController@store');          // Add new supplier
+    $router->get('/exceptions', 'SupplierController@exceptions'); // Exception reporting
+    $router->get('/cost-efficiency', 'SupplierController@costEfficiency'); // Cost efficiency analysis
+    $router->patch('/{id}/compliance', 'SupplierController@updateCompliance'); // Update compliance/certification
     $router->get('/{id}', 'SupplierController@show');        // Get supplier by ID
     $router->put('/{id}', 'SupplierController@update');      // Update supplier
     $router->patch('/{id}', 'SupplierController@update');    // Update supplier
     $router->delete('/{id}', 'SupplierController@destroy');  // Delete supplier
-    $router->patch('/{id}/compliance', 'SupplierController@updateCompliance'); // Update compliance/certification
-    $router->get('/exceptions', 'SupplierController@exceptions'); // Exception reporting
-    $router->get('/cost-efficiency', 'SupplierController@costEfficiency'); // Cost efficiency analysis
 });
 
 // ----------------------------------------
@@ -127,4 +127,16 @@ $router->group(['prefix' => 'api/contracts'], function () use ($router) {
     $router->patch('/{id}', 'ContractController@update');
     $router->delete('/{id}', 'ContractController@destroy');
     $router->get('/alerts/payment', 'ContractController@checkPaymentAlerts'); // Payment alerts
+});
+
+// ----------------------------------------
+// User Management Routes
+// ----------------------------------------
+$router->group(['prefix' => 'api/users'], function () use ($router) {
+    $router->get('/', 'UserController@index');
+    $router->post('/', 'UserController@store');
+    $router->get('/{id}', 'UserController@show');
+    $router->put('/{id}', 'UserController@update');
+    $router->patch('/{id}', 'UserController@update');
+    $router->delete('/{id}', 'UserController@destroy');
 });
