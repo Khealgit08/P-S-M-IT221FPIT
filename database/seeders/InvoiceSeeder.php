@@ -10,23 +10,18 @@ class InvoiceSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('invoices')->insert([
-            [
-                'purchase_order_id' => 1,
-                'invoice_date' => Carbon::now()->subDays(8),
-                'amount' => 90.00,
-                'status' => 'paid',
+        $invoices = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $amount = rand(1000, 5000);
+            $invoices[] = [
+                'purchase_order_id' => $i,
+                'invoice_date' => Carbon::now()->subDays($i),
+                'amount' => $amount,
+                'status' => $i % 2 === 0 ? 'paid' : 'unpaid',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ],
-            [
-                'purchase_order_id' => 2,
-                'invoice_date' => Carbon::now()->subDays(3),
-                'amount' => 100.00,
-                'status' => 'unpaid',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+            ];
+        }
+        DB::table('invoices')->insert($invoices);
     }
 }

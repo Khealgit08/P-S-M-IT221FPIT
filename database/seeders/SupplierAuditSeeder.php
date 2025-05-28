@@ -10,27 +10,22 @@ class SupplierAuditSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('supplier_audits')->insert([
-            [
-                'supplier_id' => 1,
-                'audit_date' => Carbon::now()->subDays(5),
-                'auditor' => 'Audit Team A',
-                'findings' => 'Compliant with all requirements.',
-                'recommendations' => 'Continue current practices.',
-                'status' => 'passed',
+        $audits = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $audits[] = [
+                'supplier_id' => $i,
+                'audit_date' => Carbon::now()->subDays($i),
+                'auditor' => 'Auditor ' . $i,
+                'findings' => 'Findings for audit ' . $i,
+                'recommendations' => 'Recommendation ' . $i,
+                'status' => $i % 2 === 0 ? 'passed' : 'conditional',
+                'next_audit_date' => Carbon::now()->addMonths($i),
+                'notification_sent' => $i % 2 === 0,
+                'corrective_actions' => 'Corrective action ' . $i,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ],
-            [
-                'supplier_id' => 2,
-                'audit_date' => Carbon::now()->subDays(2),
-                'auditor' => 'Audit Team B',
-                'findings' => 'Minor issues in documentation.',
-                'recommendations' => 'Improve record keeping.',
-                'status' => 'conditional',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+            ];
+        }
+        DB::table('supplier_audits')->insert($audits);
     }
 }

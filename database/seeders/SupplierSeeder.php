@@ -11,27 +11,22 @@ class SupplierSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('suppliers')->insert([
-            [
-                'name' => 'Acme Supplies',
-                'contact_person' => 'John Doe',
-                'email' => 'acme@example.com',
-                'phone' => '1234567890',
-                'address' => '123 Main St, City',
-                'status' => 'active',
+        $suppliers = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $suppliers[] = [
+                'name' => 'Supplier ' . $i,
+                'contact_person' => 'Contact ' . $i,
+                'email' => 'supplier' . $i . '@example.com',
+                'phone' => '100000000' . $i,
+                'address' => 'Address ' . $i,
+                'status' => $i % 3 === 0 ? 'inactive' : ($i % 4 === 0 ? 'blacklisted' : 'active'),
+                'certification' => 'Cert ' . $i,
+                'certification_expiry' => Carbon::now()->addMonths($i),
+                'compliance_status' => $i % 2 === 0,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ],
-            [
-                'name' => 'Global Traders',
-                'contact_person' => 'Jane Smith',
-                'email' => 'global@example.com',
-                'phone' => '0987654321',
-                'address' => '456 Market Ave, City',
-                'status' => 'active',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+            ];
+        }
+        DB::table('suppliers')->insert($suppliers);
     }
 }

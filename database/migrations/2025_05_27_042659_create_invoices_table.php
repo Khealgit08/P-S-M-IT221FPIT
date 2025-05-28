@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('purchase_order_id');
             $table->date('invoice_date');
-            $table->decimal('amount', 12, 2);
+            $table->decimal('amount', 12, 2); // always normalized as float
             $table->string('status');
             $table->timestamps();
 

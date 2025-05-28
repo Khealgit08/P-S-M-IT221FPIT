@@ -10,29 +10,20 @@ class SupplierCommunicationSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('supplier_communications')->insert([
-            [
-                'supplier_id' => 1,
-                'communication_date' => Carbon::now()->subDays(9),
-                'type' => 'Email',
-                'subject' => 'Order Confirmation',
-                'content' => 'Order #1 confirmed.',
-                'response' => 'Thank you for your order.',
-                'handled_by' => 'Support Team',
+        $communications = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $communications[] = [
+                'supplier_id' => $i,
+                'communication_date' => Carbon::now()->subDays($i),
+                'type' => $i % 2 === 0 ? 'Email' : 'Phone',
+                'subject' => 'Subject ' . $i,
+                'content' => 'Content for communication ' . $i,
+                'response' => 'Response ' . $i,
+                'handled_by' => 'Handler ' . $i,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ],
-            [
-                'supplier_id' => 2,
-                'communication_date' => Carbon::now()->subDays(7),
-                'type' => 'Phone',
-                'subject' => 'Delivery Delay',
-                'content' => 'Notified about delivery delay.',
-                'response' => 'We apologize for the delay.',
-                'handled_by' => 'Logistics',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+            ];
+        }
+        DB::table('supplier_communications')->insert($communications);
     }
 }

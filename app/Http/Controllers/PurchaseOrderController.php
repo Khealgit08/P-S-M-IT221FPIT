@@ -25,7 +25,6 @@ class PurchaseOrderController extends Controller
             'supplier_id' => 'required|exists:suppliers,id',
             'order_date' => 'required|date',
             'items' => 'required|string', // JSON or serialized
-            'total_amount' => 'required|numeric|min:0',
             'status' => 'required|string',
         ]);
         try {
@@ -53,7 +52,6 @@ class PurchaseOrderController extends Controller
             'supplier_id' => 'sometimes|required|exists:suppliers,id',
             'order_date' => 'sometimes|required|date',
             'items' => 'sometimes|required|string',
-            'total_amount' => 'sometimes|required|numeric|min:0',
             'status' => 'sometimes|required|string',
         ]);
         try {
@@ -74,5 +72,78 @@ class PurchaseOrderController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to delete purchase order', 'details' => $e->getMessage()], 500);
         }
+    }
+
+    public function approve(Request $request, $id)
+    {
+        $this->validate($request, [
+            'approved_by' => 'required|exists:users,id',
+        ]);
+        $order = PurchaseOrder::findOrFail($id);
+        if ($order->approval_status !== 'pending') {
+            return response()->json(['error' => 'Order already processed.'], 400);
+        }
+        $order->approval_status = 'approved';
+        $order->approved_by = $request->input('approved_by');
+        $order->approved_at = now();
+        $order->rejected_reason = null;
+        $order->save();
+        return response()->json(['message' => 'Purchase order approved.']);
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $this->validate($request, [
+            'approved_by' => 'required|exists:users,id',
+            'rejected_reason' => 'required|string',
+        ]);
+        $order = PurchaseOrder::findOrFail($id);
+        if ($order->approval_status !== 'pending') {
+            return response()->json(['error' => 'Order already processed.'], 400);
+        }
+        $order->approval_status = 'rejected';
+        $order->approved_by = $request->input('approved_by');
+        $order->approved_at = now();
+        $order->rejected_reason = $request->input('rejected_reason');
+        $order->save();
+        return response()->json(['message' => 'Purchase order rejected.']);
+    }
+
+    /**
+     * Perform three-way matching for a purchase order.
+     * Compares PO, GRN, and Invoice and flags discrepancies.
+     */
+    public function match($id)
+    {
+        $order = PurchaseOrder::with(['goodsReceiptNotes', 'invoices'])->findOrFail($id);
+        $poItems = collect(json_decode($order->items, true));
+        $grnItems = $order->goodsReceiptNotes->flatMap(function($grn) {
+            return collect(json_decode($grn->items, true));
+        });
+        $invoiceItems = $order->invoices->flatMap(function($inv) use ($order) {
+            // For simplicity, assume invoice amount is for all items
+            return collect([['amount' => $inv->amount]]);
+        });
+        $discrepancies = [];
+        // Check quantities and items
+        foreach ($poItems as $item) {
+            $grnQty = $grnItems->where('item', $item['item'])->sum('quantity');
+            if ($grnQty != $item['quantity']) {
+                $discrepancies[] = "Item {$item['item']} quantity mismatch: PO={$item['quantity']}, GRN={$grnQty}";
+            }
+        }
+        // Check total amount
+        $poTotal = $order->total_amount;
+        $invoiceTotal = $order->invoices->sum('amount');
+        if ($poTotal != $invoiceTotal) {
+            $discrepancies[] = "Total amount mismatch: PO={$poTotal}, Invoice={$invoiceTotal}";
+        }
+        $order->discrepancy_flag = count($discrepancies) > 0;
+        $order->discrepancy_details = count($discrepancies) ? implode("; ", $discrepancies) : null;
+        $order->save();
+        return response()->json([
+            'discrepancy_flag' => $order->discrepancy_flag,
+            'discrepancy_details' => $order->discrepancy_details,
+        ]);
     }
 }

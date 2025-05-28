@@ -77,4 +77,21 @@ class AuditController extends Controller
             return response()->json(['error' => 'Failed to delete audit record', 'details' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Schedule next audit and track corrective actions.
+     */
+    public function scheduleNextAudit(Request $request, $id)
+    {
+        $this->validate($request, [
+            'next_audit_date' => 'required|date',
+            'corrective_actions' => 'nullable|string',
+        ]);
+        $audit = SupplierAudit::findOrFail($id);
+        $audit->next_audit_date = $request->input('next_audit_date');
+        $audit->corrective_actions = $request->input('corrective_actions');
+        $audit->notification_sent = false;
+        $audit->save();
+        return response()->json(['message' => 'Next audit scheduled and corrective actions updated.']);
+    }
 }

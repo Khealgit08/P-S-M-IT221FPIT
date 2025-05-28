@@ -10,25 +10,18 @@ class SupplierClassificationSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('supplier_classifications')->insert([
-            [
-                'supplier_id' => 1,
-                'classification' => 'Preferred',
-                'criteria' => 'Consistent quality and delivery',
-                'assigned_by' => 'Manager',
-                'assigned_at' => Carbon::now()->subDays(15),
+        $classifications = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $classifications[] = [
+                'supplier_id' => $i,
+                'classification' => $i % 2 === 0 ? 'Preferred' : 'Standard',
+                'criteria' => 'Criteria ' . $i,
+                'assigned_by' => 'Manager ' . $i,
+                'assigned_at' => Carbon::now()->subDays($i),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ],
-            [
-                'supplier_id' => 2,
-                'classification' => 'Standard',
-                'criteria' => 'Meets minimum requirements',
-                'assigned_by' => 'Manager',
-                'assigned_at' => Carbon::now()->subDays(12),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+            ];
+        }
+        DB::table('supplier_classifications')->insert($classifications);
     }
 }

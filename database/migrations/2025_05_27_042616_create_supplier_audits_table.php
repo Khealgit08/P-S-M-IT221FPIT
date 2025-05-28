@@ -19,6 +19,10 @@ class CreateSupplierAuditsTable extends Migration
             $table->text('findings');
             $table->text('recommendations')->nullable();
             $table->string('status');
+            // Audit scheduling and corrective action fields
+            $table->date('next_audit_date')->nullable();
+            $table->boolean('notification_sent')->default(false);
+            $table->text('corrective_actions')->nullable();
             $table->timestamps();
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');

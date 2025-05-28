@@ -81,4 +81,23 @@ class SupplierPerformanceController extends Controller
             return response()->json(['error' => 'Failed to delete performance record', 'details' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Get supplier performance scorecard (average scores, trends).
+     */
+    public function scorecard($supplierId)
+    {
+        $performances = SupplierPerformance::where('supplier_id', $supplierId)->get();
+        if ($performances->isEmpty()) {
+            return response()->json(['message' => 'No performance data found.'], 404);
+        }
+        $avg = [
+            'quality_score' => $performances->avg('quality_score'),
+            'delivery_score' => $performances->avg('delivery_score'),
+            'cost_score' => $performances->avg('cost_score'),
+            'compliance_score' => $performances->avg('compliance_score'),
+            'overall_score' => $performances->avg('overall_score'),
+        ];
+        return response()->json(['average_scores' => $avg, 'records' => $performances]);
+    }
 }

@@ -22,6 +22,9 @@ $router->group(['prefix' => 'api/suppliers'], function () use ($router) {
     $router->put('/{id}', 'SupplierController@update');      // Update supplier
     $router->patch('/{id}', 'SupplierController@update');    // Update supplier
     $router->delete('/{id}', 'SupplierController@destroy');  // Delete supplier
+    $router->patch('/{id}/compliance', 'SupplierController@updateCompliance'); // Update compliance/certification
+    $router->get('/exceptions', 'SupplierController@exceptions'); // Exception reporting
+    $router->get('/cost-efficiency', 'SupplierController@costEfficiency'); // Cost efficiency analysis
 });
 
 // ----------------------------------------
@@ -34,6 +37,9 @@ $router->group(['prefix' => 'api/purchase-orders'], function () use ($router) {
     $router->put('/{id}', 'PurchaseOrderController@update');
     $router->patch('/{id}', 'PurchaseOrderController@update');
     $router->delete('/{id}', 'PurchaseOrderController@destroy');
+    $router->post('/{id}/approve', 'PurchaseOrderController@approve'); // Approve PO
+    $router->post('/{id}/reject', 'PurchaseOrderController@reject');   // Reject PO
+    $router->post('/{id}/match', 'PurchaseOrderController@match'); // Three-way match
 });
 
 // ----------------------------------------
@@ -70,4 +76,55 @@ $router->group(['prefix' => 'api/audits'], function () use ($router) {
     $router->put('/{id}', 'AuditController@update');
     $router->patch('/{id}', 'AuditController@update');
     $router->delete('/{id}', 'AuditController@destroy');
+    $router->patch('/{id}/schedule', 'AuditController@scheduleNextAudit'); // Schedule next audit
+});
+
+// ----------------------------------------
+// Supplier Classification Routes
+// ----------------------------------------
+$router->group(['prefix' => 'api/sup-clas'], function () use ($router) {
+    $router->get('/', 'SupplierClassificationController@index');
+    $router->post('/', 'SupplierClassificationController@store');
+    $router->get('/{id}', 'SupplierClassificationController@show');
+    $router->put('/{id}', 'SupplierClassificationController@update');
+    $router->patch('/{id}', 'SupplierClassificationController@update');
+    $router->delete('/{id}', 'SupplierClassificationController@destroy');
+});
+
+// ----------------------------------------
+// Supplier Communication Routes
+// ----------------------------------------
+$router->group(['prefix' => 'api/sup-comm'], function () use ($router) {
+    $router->get('/', 'SupplierCommunicationController@index');
+    $router->post('/', 'SupplierCommunicationController@store');
+    $router->get('/{id}', 'SupplierCommunicationController@show');
+    $router->put('/{id}', 'SupplierCommunicationController@update');
+    $router->patch('/{id}', 'SupplierCommunicationController@update');
+    $router->delete('/{id}', 'SupplierCommunicationController@destroy');
+});
+
+// ----------------------------------------
+// Supplier Performance Routes
+// ----------------------------------------
+$router->group(['prefix' => 'api/sup-perf'], function () use ($router) {
+    $router->get('/', 'SupplierPerformanceController@index');
+    $router->post('/', 'SupplierPerformanceController@store');
+    $router->get('/{id}', 'SupplierPerformanceController@show');
+    $router->put('/{id}', 'SupplierPerformanceController@update');
+    $router->patch('/{id}', 'SupplierPerformanceController@update');
+    $router->delete('/{id}', 'SupplierPerformanceController@destroy');
+    $router->get('/scorecard/{supplierId}', 'SupplierPerformanceController@scorecard'); // Supplier scorecard
+});
+
+// ----------------------------------------
+// Contract Management Routes
+// ----------------------------------------
+$router->group(['prefix' => 'api/contracts'], function () use ($router) {
+    $router->get('/', 'ContractController@index');
+    $router->post('/', 'ContractController@store');
+    $router->get('/{id}', 'ContractController@show');
+    $router->put('/{id}', 'ContractController@update');
+    $router->patch('/{id}', 'ContractController@update');
+    $router->delete('/{id}', 'ContractController@destroy');
+    $router->get('/alerts/payment', 'ContractController@checkPaymentAlerts'); // Payment alerts
 });

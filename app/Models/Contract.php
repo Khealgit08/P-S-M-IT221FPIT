@@ -4,18 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SupplierAudit extends Model
+class Contract extends Model
 {
     protected $fillable = [
         'supplier_id',
-        'audit_date',
-        'auditor',
-        'findings',
-        'recommendations',
+        'title',
+        'terms',
+        'sla',
+        'start_date',
+        'end_date',
+        'payment_terms',
+        'discount_terms',
+        'payment_due_date',
+        'payment_alert_sent',
         'status',
-        'next_audit_date',
-        'notification_sent',
-        'corrective_actions',
     ];
 
     public function supplier()

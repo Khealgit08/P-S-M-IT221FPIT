@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('phone');
             $table->string('address');
             $table->string('status'); // e.g., active, inactive, blacklisted
+            // Compliance/certification fields
+            $table->string('certification')->nullable();
+            $table->date('certification_expiry')->nullable();
+            $table->boolean('compliance_status')->default(true);
             $table->timestamps();
         });
     }

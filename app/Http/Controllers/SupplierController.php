@@ -79,4 +79,44 @@ class SupplierController extends Controller
             return response()->json(['error' => 'Failed to delete supplier', 'details' => $e->getMessage()], 500);
         }
     }
+
+    public function updateCompliance(Request $request, $id)
+    {
+        $this->validate($request, [
+            'certification' => 'sometimes|string',
+            'certification_expiry' => 'sometimes|date',
+            'compliance_status' => 'sometimes|boolean',
+        ]);
+        $supplier = Supplier::findOrFail($id);
+        $supplier->update($request->only(['certification', 'certification_expiry', 'compliance_status']));
+        return response()->json(['message' => 'Supplier compliance updated.']);
+    }
+
+    /**
+     * Exception reporting for suppliers (e.g., blacklisted, non-compliant).
+     */
+    public function exceptions()
+    {
+        $suppliers = Supplier::where('status', 'blacklisted')
+            ->orWhere('compliance_status', false)
+            ->get();
+        return response()->json(['exceptions' => $suppliers]);
+    }
+
+    /**
+     * Cost efficiency analysis for suppliers.
+     */
+    public function costEfficiency()
+    {
+        $suppliers = Supplier::with(['performances'])->get();
+        $result = $suppliers->map(function($supplier) {
+            $avgCost = $supplier->performances->avg('cost_score');
+            return [
+                'supplier_id' => $supplier->id,
+                'name' => $supplier->name,
+                'average_cost_score' => $avgCost,
+            ];
+        });
+        return response()->json(['cost_efficiency' => $result]);
+    }
 }

@@ -12,6 +12,7 @@ use Database\Seeders\SupplierPerformanceSeeder;
 use Database\Seeders\SupplierAuditSeeder;
 use Database\Seeders\SupplierClassificationSeeder;
 use Database\Seeders\SupplierCommunicationSeeder;
+use Database\Seeders\ContractSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -31,6 +32,7 @@ class DatabaseSeeder extends Seeder
             SupplierAuditSeeder::class,
             SupplierClassificationSeeder::class,
             SupplierCommunicationSeeder::class,
+            ContractSeeder::class,
         ]);
     }
 }

@@ -16,6 +16,9 @@ class Supplier extends Model
         'phone',
         'address',
         'status',
+        'certification',
+        'certification_expiry',
+        'compliance_status',
     ];
 
     public function performances()
@@ -36,5 +39,10 @@ class Supplier extends Model
     public function audits()
     {
         return $this->hasMany(SupplierAudit::class);
+    }
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
     }
 }

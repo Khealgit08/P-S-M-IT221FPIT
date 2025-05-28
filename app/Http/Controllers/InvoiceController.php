@@ -35,7 +35,6 @@ class InvoiceController extends Controller
         $this->validate($request, [
             'purchase_order_id' => 'required|exists:purchase_orders,id',
             'invoice_date' => 'required|date',
-            'amount' => 'required|numeric|min:0',
             'status' => 'required|string',
         ]);
         try {
@@ -51,7 +50,6 @@ class InvoiceController extends Controller
         $this->validate($request, [
             'purchase_order_id' => 'sometimes|required|exists:purchase_orders,id',
             'invoice_date' => 'sometimes|required|date',
-            'amount' => 'sometimes|required|numeric|min:0',
             'status' => 'sometimes|required|string',
         ]);
         try {

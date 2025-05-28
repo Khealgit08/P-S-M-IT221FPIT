@@ -13,6 +13,26 @@ class Invoice extends Model
         'status',
     ];
 
+    // Automatically calculate amount from related PO if not provided
+    public static function boot()
+    {
+        parent::boot();
+        static::saving(function ($model) {
+            if (empty($model->amount) && $model->purchase_order_id) {
+                $po = \App\Models\PurchaseOrder::find($model->purchase_order_id);
+                if ($po) {
+                    $model->amount = $po->total_amount;
+                }
+            }
+        });
+    }
+
+    // Normalize amount to float for accuracy
+    public function setAmountAttribute($value)
+    {
+        $this->attributes['amount'] = (float)$value;
+    }
+
     public function purchaseOrder()
     {
         return $this->belongsTo(PurchaseOrder::class);
